@@ -4,10 +4,12 @@ from threading import Thread
 clients = {}
 addresses= {}
 times = []
+threads = []
 
 HOST =''
-PORT = 33007
+PORT = 33000
 BUFFERSIZE=1024
+CLIENT_NO = 4
 ADDR=(HOST,PORT)
 SERVER=socket(AF_INET,SOCK_STREAM)
 SERVER.bind(ADDR)
@@ -16,12 +18,18 @@ all_times = []
 
 def accept_in_connections():
 
-	while len(clients) <=1:
+	while len(clients) < CLIENT_NO:
 		client,client_addr=SERVER.accept()
 		print("%s:%s has joined fellows."%client_addr)
 		client.send(bytes("greetings from ritzz!"+"now enter your name and press enter","utf8"))
 		addresses[client]=client_addr
-		Thread(target=handle_client,args=(client,)).start()
+		clients[client]="ritz"
+		thr = Thread(target=handle_client,args=(client,))
+		threads.append(thr)
+		thr.start()
+
+	for t in threads:
+		t.join()
 
 	print("test")
 
@@ -32,9 +40,11 @@ def handle_client(client):
 	client.send(bytes(welcome,"utf8"))
 	msg='%s has joined the chat XD' %name
 	print(welcome, msg)
-	clients[client]=name
-	if (len(clients) == 1):
-		start_game(client,name)
+	
+	print("Waiting for more users to join")
+	while (len(clients) != CLIENT_NO):
+		pass
+	start_game(client,name)
 
 def start_game(client,name):
 	
@@ -54,8 +64,9 @@ def start_game(client,name):
 		
 		print("waiting for answer")
 
-		ans=str(client.recv(BUFFERSIZE).decode("utf8"))
-		time=float(client.recv(BUFFERSIZE).decode("utf8"))
+		ans=str(client.recv(1).decode("utf8"))
+		time=(client.recv(BUFFERSIZE).decode("utf8"))
+		time=float(time)
 		
 		print("ans "+str(ans),flush=True)
 		print("crct_ans "+str(crct_ans),flush=True)
@@ -67,7 +78,6 @@ def start_game(client,name):
 		else:
 			client.send(bytes("0","utf8"))
 			client.close()
-			print("test")
 			return
 
 		# print("sent")
@@ -91,6 +101,7 @@ if __name__ == "__main__":
 	# ACCEPT_THREAD.start()
 	# ACCEPT_THREAD.join()
 
+	print("Rithic is da bomb")
 	all_times = sorted(all_times, key=lambda x: x["time"])
 
 	# broadcast all_times to all clients

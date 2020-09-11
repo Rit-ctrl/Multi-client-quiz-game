@@ -2,7 +2,7 @@ from socket import AF_INET, socket, SOCK_STREAM
 from timeit import default_timer as timer
 import sys, select, tkinter
 
-HOST='';PORT=33007
+HOST='';PORT=33000
 BUFFERSIZE=1024
 
 def start_game():
@@ -17,7 +17,7 @@ def start_game():
 		
 		question=client_socket.recv(1024).decode("utf8")
 
-		if question=="END_OF_QU" :
+		if question=="END_OF_QUIZ" :
 			return
 
 		print(question)
@@ -33,15 +33,16 @@ def start_game():
 			print("You said", ans)
 		else:
 			ans='e'
+			end_time=timer()
 			print("Times up!")
-			time = 0
+			time=end_time-start_time
 
 		client_socket.send(bytes(str(ans),"utf8"))
 		print("ans sent")
 		client_socket.send(bytes(str(time),"utf8"))
 		print("time sent")
 
-		flag=client_socket.recv(1024).decode("utf8")
+		flag=client_socket.recv(1).decode("utf8")
 
 		if(int(flag)):
 			print("Correct answer")
@@ -53,8 +54,9 @@ def start_game():
 
 
 if __name__ == "__main__":
-	# HOST=input('Enter host: ')
-	# PORT=input('Enter port: ')
+	
+	HOST=input('Enter host: ')
+	PORT=input('Enter port: ')
 	
 	ADDR=(HOST,PORT)
 	client_socket=socket(AF_INET,SOCK_STREAM)
