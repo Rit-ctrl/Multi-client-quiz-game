@@ -8,9 +8,10 @@ times = []
 threads = []
 
 HOST =''
-PORT = 33002
+PORT = 33007
 BUFFERSIZE=1024
-CLIENT_NO = 1
+CURR_CLIENT_NO = 0
+TOT_CLIENT_NO = 1
 ADDR=(HOST,PORT)
 SERVER=socket(AF_INET,SOCK_STREAM)
 SERVER.bind(ADDR)
@@ -71,16 +72,16 @@ def start_game(client,name):
 		print("waiting for answer")
 
 		ans=str(client.recv(1).decode("utf8"))
-		time=(client.recv(BUFFERSIZE).decode("utf8"))
-		time=float(time)
+		# time=(client.recv(BUFFERSIZE).decode("utf8"))
+		# time=float(time)
 		
 		print("ans "+str(ans),flush=True)
 		print("crct_ans "+str(crct_ans),flush=True)
-		print("time "+str(time),flush=True)
+		# print("time "+str(time),flush=True)
 
 		if ans==crct_ans :
 			client.send(bytes("1","utf8"))
-			tot_time+=time
+			# tot_time+=time
 		else:
 			client.send(bytes("0","utf8"))
 			client.close()
@@ -111,9 +112,9 @@ if __name__ == "__main__":
 	all_times = sorted(all_times, key=lambda x: x["time"])
 	result=''
 	for i in all_times:
-		result=result+str(i["name"])+","+str(i["time"])+"\n"
+		result=result+str(i["name"])+","+str(i["time"])+";"
 	for i in clients:
-		i.send(bytes(result,"utf8"))
+		i.send(bytes(result[0:-1],"utf8"))
 	# for i in all_times:
 	print(result)
 
