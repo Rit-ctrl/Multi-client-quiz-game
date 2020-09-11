@@ -31,7 +31,7 @@ def handle_client(client):
 	msg='%s has joined the chat XD' %name
 	print(welcome, msg)
 
-	if (len(clients) == 4):
+	if (len(clients) == 1):
 		start_game()
 
 def start_game(name):
@@ -48,6 +48,7 @@ def start_game(name):
 		
 		send_q = line[0:5]
 		ans = line[6]
+		client.send(bytes(send_q))
 
 		# recv (answer, time) from client, compare with ans, add time
 		# if answer is 'e' timeout, terminate thread
@@ -62,11 +63,11 @@ def start_game(name):
     })
 
 if __name__ == "__main__":
-	
+	SERVER.listen(4)
 	# start_game()
 	ACCEPT_THREAD=Thread(target=accept_in_connections)
-    ACCEPT_THREAD.start()
-    ACCEPT_THREAD.join()
+	ACCEPT_THREAD.start()
+	ACCEPT_THREAD.join()
 
 	all_times = sorted(all_times, key=lambda x: x["time"])
 
