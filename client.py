@@ -54,11 +54,11 @@ def start_game():
 
 
 if __name__ == "__main__":
-	
+
 	HOST=input('Enter host: ')
 	PORT=input('Enter port: ')
 	
-	ADDR=(HOST,PORT)
+	ADDR=(HOST,int(PORT))
 	client_socket=socket(AF_INET,SOCK_STREAM)
 	client_socket.connect(ADDR)
 
