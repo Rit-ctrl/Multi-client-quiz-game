@@ -10,7 +10,8 @@ threads = []
 HOST =''
 PORT = 33000
 BUFFERSIZE=1024
-CLIENT_NO = 2
+CURR_CLIENT_NO = 0
+TOT_CLIENT_NO = 2
 ADDR=(HOST,PORT)
 SERVER=socket(AF_INET,SOCK_STREAM)
 SERVER.bind(ADDR)
@@ -18,21 +19,22 @@ SERVER.bind(ADDR)
 all_times = []
 
 def accept_in_connections():
-
-	while len(clients) < CLIENT_NO:
+	global CURR_CLIENT_NO,TOT_CLIENT_NO
+	while CURR_CLIENT_NO < TOT_CLIENT_NO:
+		CURR_CLIENT_NO+=1
 		client,client_addr=SERVER.accept()
 		print("%s:%s has joined fellows."%client_addr)
 		client.send(bytes("greetings from ritzz!"+"now enter your name and press enter","utf8"))
 		addresses[client]=client_addr
-		clients[client]="ritz"
 		thr = Thread(target=handle_client,args=(client,))
 		threads.append(thr)
 		thr.start()
 		time.sleep(1)
 
-
+	print("joining")
 	for t in threads:
 		t.join()
+	time.sleep(1)
 
 	print("test")
 
@@ -43,11 +45,13 @@ def handle_client(client):
 	client.send(bytes(welcome,"utf8"))
 	msg='%s has joined the chat XD' %name
 	print(welcome, msg)
+	clients[client]=name
 	
 	print("Waiting for more users to join")
-	while (len(clients) != CLIENT_NO):
+	while (len(clients) != TOT_CLIENT_NO):
 		pass
 	start_game(client,name)
+	print("game ended for "+name)
 
 def start_game(client,name):
 	
@@ -58,9 +62,9 @@ def start_game(client,name):
 
 	while(line != ''):
 
-		client.send(bytes(line[0:-2],"utf8"))
+		client.send(bytes(line[0:-3],"utf8"))
 		print(len(line))
-		if line=="END_OF_QUIZ__" :
+		if line=="END_OF_QUIZ___" :
 			break
 
 		crct_ans = line.split(sep=',')[6][0]
@@ -97,7 +101,7 @@ def start_game(client,name):
 	})
 
 if __name__ == "__main__":
-	SERVER.listen(4)
+	SERVER.listen(TOT_CLIENT_NO)
 	# start_game()
 	accept_in_connections()
 	# ACCEPT_THREAD=Thread(target=accept_in_connections)
@@ -106,7 +110,12 @@ if __name__ == "__main__":
 
 	print("Rithic is da bomb")
 	all_times = sorted(all_times, key=lambda x: x["time"])
-
-	print(all_times)
+	result=''
+	for i in all_times:
+		result=result+str(i["name"])+","+str(i["time"])+"\n"
+	for i in clients:
+		i.send(bytes(result,"utf8"))
+	# for i in all_times:
+	print(result)
 
 	# broadcast all_times to all clients

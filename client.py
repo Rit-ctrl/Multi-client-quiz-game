@@ -18,13 +18,13 @@ def start_game():
 		question=client_socket.recv(1024).decode("utf8")
 
 		if question=="END_OF_QUIZ" :
-			return
+			break
 
 		print(question)
 		# print the question in proper format
 		print("You have 60 seconds to answer!")
 		start_time=timer()
-		i, o, e = select.select( [sys.stdin], [], [], 10 )
+		i, o, e = select.select( [sys.stdin], [], [], 60 )
 		time = 0
 		if (i):
 			ans=sys.stdin.readline().strip()
@@ -63,6 +63,8 @@ if __name__ == "__main__":
 	client_socket.connect(ADDR)
 
 	start_game()
+	result=client_socket.recv(1024).decode("utf8")
+	print(result)
 	# receive_thread=Thread(target=start_game)
 	# receive_thread.start()
 	# tkinter.mainloop()
