@@ -1,5 +1,6 @@
 from socket import AF_INET,socket,SOCK_STREAM
 from threading import Thread
+import time
 
 clients = {}
 addresses= {}
@@ -9,7 +10,7 @@ threads = []
 HOST =''
 PORT = 33000
 BUFFERSIZE=1024
-CLIENT_NO = 3
+CLIENT_NO = 2
 ADDR=(HOST,PORT)
 SERVER=socket(AF_INET,SOCK_STREAM)
 SERVER.bind(ADDR)
@@ -27,6 +28,8 @@ def accept_in_connections():
 		thr = Thread(target=handle_client,args=(client,))
 		threads.append(thr)
 		thr.start()
+		time.sleep(1)
+
 
 	for t in threads:
 		t.join()
@@ -88,7 +91,7 @@ def start_game(client,name):
 		line = q_file.readline()
 
 	avg_time = tot_time / 5
-	times.append({
+	all_times.append({
 		"name" : name,
 		"time" : avg_time
 	})
@@ -103,5 +106,7 @@ if __name__ == "__main__":
 
 	print("Rithic is da bomb")
 	all_times = sorted(all_times, key=lambda x: x["time"])
+
+	print(all_times)
 
 	# broadcast all_times to all clients
