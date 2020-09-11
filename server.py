@@ -8,7 +8,7 @@ times = []
 threads = []
 
 HOST =''
-PORT = 33007
+PORT = 33004
 BUFFERSIZE=1024
 CURR_CLIENT_NO = 0
 TOT_CLIENT_NO = 1
@@ -83,6 +83,7 @@ def start_game(client,name):
 			client.send(bytes("1","utf8"))
 			# tot_time+=time
 		else:
+			del clients[client]
 			client.send(bytes("0","utf8"))
 			client.close()
 			return
@@ -117,5 +118,5 @@ if __name__ == "__main__":
 		i.send(bytes(result[0:-1],"utf8"))
 	# for i in all_times:
 	print(result)
-
+	SERVER.close()
 	# broadcast all_times to all clients

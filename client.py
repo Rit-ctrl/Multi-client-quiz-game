@@ -16,6 +16,9 @@ client_socket.connect(ADDR)
 def send_ans(ans):
 	client_socket.send(bytes(str(ans),"utf8"))
 
+def quit_app ():
+	exit(0)
+
 top=tkinter.Tk();
 top.title("Messenger")
 
@@ -66,6 +69,14 @@ button_d = tkinter.Button(
 	fg="yellow",
 	command=lambda: send_ans("d")
 )
+quit_button = tkinter.Button(
+	    text="QUIT !",
+	    width=25,
+	    height=5,
+	    bg="blue",
+	    fg="yellow",
+		command=quit_app
+	)
 
 
 msg_list.insert(tkinter.END,"hi there")
@@ -126,8 +137,13 @@ def start_game():
 		if(int(flag)):
 			print("Correct answer")
 		else:
-			print("Better luck next time")
+			msg_list.insert(tkinter.END,"Better luck next time")
 			client_socket.close()
+			button_a.destroy()
+			button_b.destroy()
+			button_c.destroy()
+			button_d.destroy()
+			quit_button.pack()
 			break
 			# exit(0)
 
@@ -145,19 +161,8 @@ def start_game():
 	button_c.destroy()
 	button_d.destroy()
 
-	button = tkinter.Button(
-	    text="QUIT !",
-	    width=25,
-	    height=5,
-	    bg="blue",
-	    fg="yellow",
-		command=quit_app
-	)
-	button.pack()
+	quit_button.pack()
 	
-
-def quit_app ():
-	exit(0)
 
 receive_thread=Thread(target=start_game)
 receive_thread.start()
