@@ -3,9 +3,10 @@ from threading import Thread
 
 clients = {}
 addresses= {}
+times = []
 
 HOST =''
-PORT = 33000
+PORT = 33002
 BUFFERSIZE=1024
 ADDR=(HOST,PORT)
 SERVER=socket(AF_INET,SOCK_STREAM)
@@ -30,36 +31,53 @@ def handle_client(client):
 	client.send(bytes(welcome,"utf8"))
 	msg='%s has joined the chat XD' %name
 	print(welcome, msg)
-
+	clients[client]=name
 	if (len(clients) == 1):
-		start_game()
+		start_game(client,name)
 
-def start_game(name):
+def start_game(client,name):
 	
 	q_file = open("question.csv", "r")
 	line = q_file.readline()
 	line = q_file.readline()
-
-	time = 0
+	tot_time = 0
 
 	while(line != ''):
 
-		line = line.split(sep=',')
 		
-		send_q = line[0:5]
-		ans = line[6]
-		client.send(bytes(send_q))
+		# send_q = line[0:6]
+		# ans = line[6]
+		# print(send_q)
+		client.send(bytes(line[0:-3],"utf8"))
+		crct_ans = str(line.split(sep=',')[6])
+		ans=str(client.recv(BUFFERSIZE).decode("utf8"))
+		time=float(client.recv(BUFFERSIZE).decode("utf8"))
+		print("ans "+str(ans),flush=True)
+		print("crct_ans "+str(crct_ans),flush=True)
+		print("time "+str(time),flush=True)
 
+
+		if ans==crct_ans :
+			client.send(bytes("1","utf8"))
+			tot_time+=time
+
+		else:
+			client.send(bytes("0","utf8"))
+			client.close()
+			return
+
+
+		# print("sent")
 		# recv (answer, time) from client, compare with ans, add time
 		# if answer is 'e' timeout, terminate thread
 
-		print(q_no + ". " + question)
+		# print(q_no + ". " + question)
 		line = q_file.readline()
 
-	# time = time / 5
+	avg_time = tot_time / 5
 	times.append({
         "name" : name,
-        "time" : 10
+        "time" : avg_time
     })
 
 if __name__ == "__main__":

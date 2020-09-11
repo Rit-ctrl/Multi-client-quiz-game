@@ -1,15 +1,24 @@
-times = []
+import sys, select
+from timeit import default_timer as timer
 
-times.append({
-        "name" : "rithix",
-        "time" : 10
-    })
+print("You have ten seconds to answer!")
 
-times.append({
-        "name" : "santi",
-        "time" : -5
-    })
+start = timer()
+i, o, e = select.select( [sys.stdin], [], [], 3 )
 
-times = sorted(times, key=lambda x: x["time"])
 
-print(times)
+if (i):
+  x=sys.stdin.readline().strip()
+  print("You said", x)
+else:
+  print("You said nothing!")
+end = timer()
+
+print(i)
+print(o)
+print(e)
+
+
+
+
+print(end - start) 
