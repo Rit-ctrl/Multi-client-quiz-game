@@ -6,7 +6,7 @@ addresses= {}
 times = []
 
 HOST =''
-PORT = 33002
+PORT = 33007
 BUFFERSIZE=1024
 ADDR=(HOST,PORT)
 SERVER=socket(AF_INET,SOCK_STREAM)
@@ -16,13 +16,14 @@ all_times = []
 
 def accept_in_connections():
 
-	while len(clients) <=4:
+	while len(clients) <=1:
 		client,client_addr=SERVER.accept()
 		print("%s:%s has joined fellows."%client_addr)
 		client.send(bytes("greetings from ritzz!"+"now enter your name and press enter","utf8"))
 		addresses[client]=client_addr
 		Thread(target=handle_client,args=(client,)).start()
 
+	print("test")
 
 def handle_client(client):
 
@@ -44,28 +45,30 @@ def start_game(client,name):
 
 	while(line != ''):
 
+		client.send(bytes(line[0:-2],"utf8"))
+		print(len(line))
+		if line=="END_OF_QUIZ__" :
+			break
+
+		crct_ans = line.split(sep=',')[6][0]
 		
-		# send_q = line[0:6]
-		# ans = line[6]
-		# print(send_q)
-		client.send(bytes(line[0:-3],"utf8"))
-		crct_ans = str(line.split(sep=',')[6])
+		print("waiting for answer")
+
 		ans=str(client.recv(BUFFERSIZE).decode("utf8"))
 		time=float(client.recv(BUFFERSIZE).decode("utf8"))
+		
 		print("ans "+str(ans),flush=True)
 		print("crct_ans "+str(crct_ans),flush=True)
 		print("time "+str(time),flush=True)
 
-
 		if ans==crct_ans :
 			client.send(bytes("1","utf8"))
 			tot_time+=time
-
 		else:
 			client.send(bytes("0","utf8"))
 			client.close()
+			print("test")
 			return
-
 
 		# print("sent")
 		# recv (answer, time) from client, compare with ans, add time
@@ -76,16 +79,17 @@ def start_game(client,name):
 
 	avg_time = tot_time / 5
 	times.append({
-        "name" : name,
-        "time" : avg_time
-    })
+		"name" : name,
+		"time" : avg_time
+	})
 
 if __name__ == "__main__":
 	SERVER.listen(4)
 	# start_game()
-	ACCEPT_THREAD=Thread(target=accept_in_connections)
-	ACCEPT_THREAD.start()
-	ACCEPT_THREAD.join()
+	accept_in_connections()
+	# ACCEPT_THREAD=Thread(target=accept_in_connections)
+	# ACCEPT_THREAD.start()
+	# ACCEPT_THREAD.join()
 
 	all_times = sorted(all_times, key=lambda x: x["time"])
 
