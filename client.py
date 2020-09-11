@@ -54,7 +54,7 @@ def start_game():
 		# print("You have 60 seconds to answer!")
 		msg_list.insert(tkinter.END,"You have 60 seconds to answer!")
 		start_time=timer()
-		i, o, e = select.select( [sys.stdin], [], [], 10 )
+		i, o, e = select.select( [sys.stdin], [], [], 60 )
 		time = 0
 		if (i):
 			ans=sys.stdin.readline().strip()
@@ -92,6 +92,19 @@ def start_game():
 	)
 	button.pack()
 	
+<<<<<<< HEAD
+=======
+	ADDR=(HOST,int(PORT))
+	client_socket=socket(AF_INET,SOCK_STREAM)
+	client_socket.connect(ADDR)
+
+	start_game()
+	result=client_socket.recv(1024).decode("utf8")
+	print(result)
+	# receive_thread=Thread(target=start_game)
+	# receive_thread.start()
+	# tkinter.mainloop()
+>>>>>>> 21aa2a358d75a7a10708efeff6445b1706effd52
 
 def quit_app ():
 	exit(0)
