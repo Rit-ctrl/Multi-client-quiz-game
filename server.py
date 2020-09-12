@@ -8,10 +8,10 @@ times = []
 threads = []
 
 HOST =''
-PORT = 33004
+PORT = 33001
 BUFFERSIZE=1024
 CURR_CLIENT_NO = 0
-TOT_CLIENT_NO = 1
+TOT_CLIENT_NO = 2
 ADDR=(HOST,PORT)
 SERVER=socket(AF_INET,SOCK_STREAM)
 SERVER.bind(ADDR)
@@ -29,22 +29,22 @@ def accept_in_connections():
 		thr = Thread(target=handle_client,args=(client,))
 		threads.append(thr)
 		thr.start()
-		time.sleep(1)
+		time.sleep(.1)
 
-	print("joining")
+	# print("joining")
 	for t in threads:
 		t.join()
 	time.sleep(1)
 
-	print("test")
+	# print("test")
 
 def handle_client(client):
 
 	name=client.recv(BUFFERSIZE).decode("utf8")
-	welcome='Welcome %s! If you want to quit,you hit {quit} to exit.' %name
+	welcome='Welcome %s! Please wait for the other clients to join' %name
 	client.send(bytes(welcome,"utf8"))
-	msg='%s has joined the chat XD' %name
-	print(welcome, msg)
+	# msg='%s has joined the chat XD' %name
+	# print(welcome, msg)
 	clients[client]=name
 	
 	print("Waiting for more users to join")
@@ -55,6 +55,8 @@ def handle_client(client):
 
 def start_game(client,name):
 	
+	client.send(bytes("dummy","utf8"))
+	time.sleep(.1)
 	q_file = open("question.csv", "r")
 	line = q_file.readline()
 	line = q_file.readline()
@@ -63,28 +65,32 @@ def start_game(client,name):
 	while(line != ''):
 
 		client.send(bytes(line[0:-3],"utf8"))
-		print(len(line))
+		# print(len(line))
 		if line=="END_OF_QUIZ___" :
 			break
 
 		crct_ans = line.split(sep=',')[6][0]
 		
-		print("waiting for answer")
+		# print("waiting for answer")
 
 		ans=str(client.recv(1).decode("utf8"))
-		# time=(client.recv(BUFFERSIZE).decode("utf8"))
-		# time=float(time)
+		q_time=(client.recv(BUFFERSIZE).decode("utf8"))
+		q_time=float(q_time)
 		
-		print("ans "+str(ans),flush=True)
-		print("crct_ans "+str(crct_ans),flush=True)
+		# print("ans "+str(ans),flush=True)
+		# print("crct_ans "+str(crct_ans),flush=True)
 		# print("time "+str(time),flush=True)
 
 		if ans==crct_ans :
 			client.send(bytes("1","utf8"))
-			# tot_time+=time
+			tot_time+=q_time
 		else:
 			del clients[client]
 			client.send(bytes("0","utf8"))
+			if ans=="e":
+				client.send(bytes("You took more than 60 seconds!","utf8"))
+			else:
+				client.send(bytes("Wrong answer!","utf8"))
 			client.close()
 			return
 

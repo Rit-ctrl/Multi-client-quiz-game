@@ -1,7 +1,7 @@
 from socket import AF_INET, socket, SOCK_STREAM
 from timeit import default_timer as timer
 from threading import Thread
-import sys, select, tkinter
+import sys, select, tkinter, time
 
 HOST='';PORT=33001
 BUFFERSIZE=1024
@@ -12,9 +12,22 @@ PORT=input('Enter port: ')
 ADDR=(HOST,int(PORT))
 client_socket=socket(AF_INET,SOCK_STREAM)
 client_socket.connect(ADDR)
+start_time=0.0
 
 def send_ans(ans):
-	client_socket.send(bytes(str(ans),"utf8"))
+	end_time=timer()
+	time=end_time-start_time
+	print(time)
+	if time<=60:
+		client_socket.send(bytes(str(ans),"utf8"))
+	else:
+		client_socket.send(bytes(str("e"),"utf8"))
+	client_socket.send(bytes(str(time),"utf8"))
+
+def send_name(name):
+	client_socket.send(bytes(str(name),"utf8"))
+	entry_field.destroy()
+	send_button.destroy()
 
 def quit_app ():
 	exit(0)
@@ -23,14 +36,20 @@ top=tkinter.Tk();
 top.title("Messenger")
 
 messages_frame=tkinter.Frame(top)
-my_msg=tkinter.StringVar()
-my_msg.set("Type your message here")
 scrollbar=tkinter.Scrollbar(messages_frame)
 
 msg_list=tkinter.Listbox(messages_frame,height=15,width=50,yscrollcommand=scrollbar.set)
 scrollbar.pack(side=tkinter.RIGHT,fill=tkinter.Y)
 msg_list.pack(side=tkinter.LEFT,fill=tkinter.BOTH)
 msg_list.pack()
+messages_frame.pack()
+
+my_msg=tkinter.StringVar()
+entry_field=tkinter.Entry(top,textvariable=my_msg)
+entry_field.bind("<Return>", lambda x:send_name(my_msg.get()))
+entry_field.pack()
+send_button=tkinter.Button(top,text="Send",command=lambda:send_name(my_msg.get()))
+send_button.pack()
 
 option_a = tkinter.StringVar()
 option_b = tkinter.StringVar()
@@ -78,39 +97,42 @@ quit_button = tkinter.Button(
 		command=quit_app
 	)
 
-
-msg_list.insert(tkinter.END,"hi there")
-msg_list.insert(tkinter.END,"Whats up")
-
-messages_frame.pack()
-
-
-
 def start_game():
 
-	print("Enter name : ",end="")
-	name=input()
-	client_socket.send(bytes(name,"utf8"))
-	client_socket.recv(1024).decode("utf8")
-	client_socket.recv(1024).decode("utf8")
+	# print("Enter name : ",end="")
+	# name=input()
+	# client_socket.send(bytes(name,"utf8"))
+	global start_time
+	# msg_list.insert(tkinter.END,"Welcome")
+	# msg_list.insert(tkinter.END,"Please enter your name")
+	x=client_socket.recv(1024).decode("utf8")
+	msg_list.insert(tkinter.END,x)
+	print(x)
+	x=client_socket.recv(1024).decode("utf8")
+	msg_list.insert(tkinter.END,x)
+	print(x)
+	client_socket.recv(6)
 	button_a.pack()
 	button_b.pack()
 	button_c.pack()
 	button_d.pack()
 	while(1):
-		
+
 		question=client_socket.recv(1024).decode("utf8")
 
 		if question=="END_OF_QUIZ" :
 			break
 
 		question=question.split(',')
+		msg_list.delete(0,1)
 		msg_list.insert(tkinter.END,question[0]+") "+question[1])
 		msg_list.insert(tkinter.END,"You have 60 seconds to answer!")
 		option_a.set("(A) "+question[2])
 		option_b.set("(B) "+question[3])
 		option_c.set("(C) "+question[4])
 		option_d.set("(D) "+question[5])
+		start_time=timer()
+
 		# print("You have 60 seconds to answer!")
 		# msg_list.insert(tkinter.END,"You have 60 seconds to answer!")
 		# start_time=timer()
@@ -137,6 +159,9 @@ def start_game():
 		if(int(flag)):
 			print("Correct answer")
 		else:
+			msg_list.delete(0,1)
+			msg=client_socket.recv(1024).decode("utf8")
+			msg_list.insert(tkinter.END,msg)
 			msg_list.insert(tkinter.END,"Better luck next time")
 			client_socket.close()
 			button_a.destroy()
@@ -144,22 +169,27 @@ def start_game():
 			button_c.destroy()
 			button_d.destroy()
 			quit_button.pack()
-			break
+			return
 			# exit(0)
 
-	result=client_socket.recv(1024).decode("utf8")
-	msg_list.insert(tkinter.END,"Leaderboard")
-	x=1
-	for player in result.split(";"):
-		player_info=player.split(",")
-		msg=str(x)+"   "+player_info[0]+"   "+player_info[1]
-		msg_list.insert(tkinter.END,msg)
-	msg_list.insert(tkinter.END,"Thank you!")
+	msg_list.delete(0,1)
+	msg_list.insert(tkinter.END,"Waiting for other clients to complete")
 
 	button_a.destroy()
 	button_b.destroy()
 	button_c.destroy()
 	button_d.destroy()
+
+	result=client_socket.recv(1024).decode("utf8")
+	msg_list.delete(0)
+	msg_list.insert(tkinter.END,"Leaderboard")
+	x=1
+	for player in result.split(";"):
+		player_info=player.split(",")
+		msg=str(x)+"   "+player_info[0]+"   "+str(round(float(player_info[1]),3))+"s"
+		msg_list.insert(tkinter.END,msg)
+		x=x+1
+	msg_list.insert(tkinter.END,"Thank you!")
 
 	quit_button.pack()
 	
