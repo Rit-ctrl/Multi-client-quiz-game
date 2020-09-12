@@ -8,10 +8,10 @@ times = []
 threads = []
 
 HOST =''
-PORT = 33001
+PORT = 33000
 BUFFERSIZE=1024
 CURR_CLIENT_NO = 0
-TOT_CLIENT_NO = 2
+TOT_CLIENT_NO = 1
 ADDR=(HOST,PORT)
 SERVER=socket(AF_INET,SOCK_STREAM)
 SERVER.bind(ADDR)
@@ -77,9 +77,9 @@ def start_game(client,name):
 		q_time=(client.recv(BUFFERSIZE).decode("utf8"))
 		q_time=float(q_time)
 		
-		# print("ans "+str(ans),flush=True)
+		print("ans "+str(ans),flush=True)
 		# print("crct_ans "+str(crct_ans),flush=True)
-		# print("time "+str(time),flush=True)
+		print("time "+str(q_time),flush=True)
 
 		if ans==crct_ans :
 			client.send(bytes("1","utf8"))

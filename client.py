@@ -3,7 +3,7 @@ from timeit import default_timer as timer
 from threading import Thread
 import sys, select, tkinter, time
 
-HOST='';PORT=33001
+HOST='';PORT=33000
 BUFFERSIZE=1024
 
 HOST=input('Enter host: ')
@@ -13,16 +13,39 @@ ADDR=(HOST,int(PORT))
 client_socket=socket(AF_INET,SOCK_STREAM)
 client_socket.connect(ADDR)
 start_time=0.0
+sent = 0
 
 def send_ans(ans):
-	end_time=timer()
-	time=end_time-start_time
-	print(time)
-	if time<=60:
-		client_socket.send(bytes(str(ans),"utf8"))
-	else:
-		client_socket.send(bytes(str("e"),"utf8"))
-	client_socket.send(bytes(str(time),"utf8"))
+	# end_time=timer()
+	# time=end_time-start_time
+	# print(time)
+	# if time<=60:
+	# 	client_socket.send(bytes(str(ans),"utf8"))
+	# else:
+	# 	client_socket.send(bytes(str("e"),"utf8"))
+	# t_out = Thread(target=timeout).start()
+	client_socket.send(bytes(str(ans),"utf8"))
+	global sent
+	sent = 1
+
+def timeout():
+
+	start_time = timer()
+	global sent
+	print("tout cell")
+	while(1):
+		if (timer() - start_time > 10):
+			client_socket.send(bytes(str("e"),"utf8"))
+			client_socket.send(bytes(str(timer() - start_time),"utf8"))
+			break
+		else:
+			if sent:
+				print("answer sent")
+				client_socket.send(bytes(str(timer() - start_time),"utf8"))
+				sent = 0
+				return
+			else:
+				continue
 
 def send_name(name):
 	client_socket.send(bytes(str(name),"utf8"))
@@ -127,11 +150,18 @@ def start_game():
 		msg_list.delete(0,1)
 		msg_list.insert(tkinter.END,question[0]+") "+question[1])
 		msg_list.insert(tkinter.END,"You have 60 seconds to answer!")
+		
 		option_a.set("(A) "+question[2])
 		option_b.set("(B) "+question[3])
 		option_c.set("(C) "+question[4])
 		option_d.set("(D) "+question[5])
-		start_time=timer()
+		
+		t_out = Thread(target=timeout).start()
+			
+			# else if (sent):
+			# 		break
+			# 	else:
+			# 		continue
 
 		# print("You have 60 seconds to answer!")
 		# msg_list.insert(tkinter.END,"You have 60 seconds to answer!")
@@ -172,6 +202,8 @@ def start_game():
 			return
 			# exit(0)
 
+		# time.sleep(1)
+
 	msg_list.delete(0,1)
 	msg_list.insert(tkinter.END,"Waiting for other clients to complete")
 
@@ -197,3 +229,4 @@ def start_game():
 receive_thread=Thread(target=start_game)
 receive_thread.start()
 tkinter.mainloop()
+client_socket.close()
