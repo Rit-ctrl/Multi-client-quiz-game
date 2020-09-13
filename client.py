@@ -48,9 +48,10 @@ def timeout():
 				continue
 
 def send_name(name):
-	client_socket.send(bytes(str(name),"utf8"))
-	entry_field.destroy()
-	send_button.destroy()
+	if(name!=''):
+		client_socket.send(bytes(str(name),"utf8"))
+		entry_field.destroy()
+		send_button.destroy()
 
 def quit_app ():
 	exit(0)
