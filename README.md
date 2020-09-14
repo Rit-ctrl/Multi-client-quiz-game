@@ -1,6 +1,10 @@
 # Multi-client-quiz-game
 
-This repo is an implementation of a multiplayer quiz game.
+This repo is an implementation of a multiplayer quiz game using socket programming.
+
+## Introduction
+
+TCP/IP was used to create the application stack. Python was chossen, due to its easy to code nature.
 
 ## Rules:
 
@@ -14,9 +18,32 @@ This repo is an implementation of a multiplayer quiz game.
 
 ### Questions:
 
+One can edit the questions in the game by editing the question.csv file.
 
+##### NOTE:
+Do not remove the first and last lines of the question.csv file.
 
-### Number of players
+##### Format
+The questions and options should be in the following format:
+```
+<question number>,<question>,<option a>,<option b>,<option c>,<option d>,<ans: correct option>
+```
 
+### Players, IP Address and PORT
+
+```line __:``` defines the total number of players.  
+```line __:``` defines the IP Address of the server.  
+```line __:``` defines the Port the server is connected to.
 
 ## Starting the game
+Run the following
+```
+python3 server.py
+```
+
+## Joining the game
+Run the following
+```
+python3 client.py
+```
+Enter the correct Host IP Address and Port to join the game.
