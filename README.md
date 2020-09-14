@@ -4,7 +4,7 @@ This repo is an implementation of a multiplayer quiz game using socket programmi
 
 ## Introduction
 
-TCP/IP was used to create the application stack. Python was chossen, due to its easy to code nature.
+TCP/IP was used to create the application stack. Python was chosen, due to its easy to code nature.
 
 ## Rules:
 
