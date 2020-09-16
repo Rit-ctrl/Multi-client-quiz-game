@@ -128,9 +128,7 @@ def start_game():
 	# client_socket.send(bytes(name,"utf8"))
 	global start_time
 	# msg_list.insert(tkinter.END,"Welcome")
-	# msg_list.insert(tkinter.END,"Please enter your name")
 	msg_list.insert(tkinter.END,"Please enter your name and press send")
-	# msg_list.insert(tkinter.END,"Greetings from the quiz master!")
 
 	# x=client_socket.recv(1024).decode("utf8")
 	# msg_list.insert(tkinter.END,x)
