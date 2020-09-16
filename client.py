@@ -32,7 +32,7 @@ def timeout():
 
 	start_time = timer()
 	global sent
-	print("tout cell")
+	# print("tout cell")
 	while(1):
 		if (timer() - start_time > 10):
 			client_socket.send(bytes(str("e"),"utf8"))
@@ -40,7 +40,7 @@ def timeout():
 			break
 		else:
 			if sent:
-				print("answer sent")
+				# print("answer sent")
 				client_socket.send(bytes(str(timer() - start_time),"utf8"))
 				sent = 0
 				return
@@ -129,13 +129,16 @@ def start_game():
 	global start_time
 	# msg_list.insert(tkinter.END,"Welcome")
 	# msg_list.insert(tkinter.END,"Please enter your name")
+	msg_list.insert(tkinter.END,"Please enter your name and press send")
+	# msg_list.insert(tkinter.END,"Greetings from the quiz master!")
+
+	# x=client_socket.recv(1024).decode("utf8")
+	# msg_list.insert(tkinter.END,x)
+	# print(x)
 	x=client_socket.recv(1024).decode("utf8")
 	msg_list.insert(tkinter.END,x)
-	print(x)
-	x=client_socket.recv(1024).decode("utf8")
-	msg_list.insert(tkinter.END,x)
-	print(x)
-	client_socket.recv(6)
+	# print(x)
+	# client_socket.recv(6)
 	button_a.pack()
 	button_b.pack()
 	button_c.pack()
@@ -157,7 +160,7 @@ def start_game():
 		option_c.set("(C) "+question[4])
 		option_d.set("(D) "+question[5])
 		
-		t_out = Thread(target=timeout).start()
+		Thread(target=timeout).start()
 			
 			# else if (sent):
 			# 		break
@@ -188,7 +191,7 @@ def start_game():
 		flag=client_socket.recv(1).decode("utf8")
 
 		if(int(flag)):
-			print("Correct answer")
+			pass
 		else:
 			msg_list.delete(0,1)
 			msg=client_socket.recv(1024).decode("utf8")

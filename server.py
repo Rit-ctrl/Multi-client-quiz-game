@@ -23,8 +23,9 @@ def accept_in_connections():
 	while CURR_CLIENT_NO < TOT_CLIENT_NO:
 		CURR_CLIENT_NO+=1
 		client,client_addr=SERVER.accept()
-		print("%s:%s has joined fellows."%client_addr)
-		client.send(bytes("greetings from ritzz!"+"now enter your name and press enter","utf8"))
+		print("%s:%s has joined the quiz."%client_addr)
+		# client.send(bytes("Greetings from the quiz master!","utf8"))
+		# client.send(bytes("Please enter your name and press enter","utf8"))
 		addresses[client]=client_addr
 		thr = Thread(target=handle_client,args=(client,))
 		threads.append(thr)
@@ -55,7 +56,7 @@ def handle_client(client):
 
 def start_game(client,name):
 	
-	client.send(bytes("dummy","utf8"))
+	# client.send(bytes("dummy","utf8"))
 	time.sleep(.1)
 	q_file = open("question.csv", "r")
 	line = q_file.readline()
@@ -77,9 +78,9 @@ def start_game(client,name):
 		q_time=(client.recv(BUFFERSIZE).decode("utf8"))
 		q_time=float(q_time)
 		
-		print("ans "+str(ans),flush=True)
-		# print("crct_ans "+str(crct_ans),flush=True)
-		print("time "+str(q_time),flush=True)
+		# print("ans "+str(ans),flush=True)
+	    # print("crct_ans "+str(crct_ans),flush=True)
+		# print("time "+str(q_time),flush=True)
 
 		if ans==crct_ans :
 			client.send(bytes("1","utf8"))
@@ -115,7 +116,6 @@ if __name__ == "__main__":
 	# ACCEPT_THREAD.start()
 	# ACCEPT_THREAD.join()
 
-	print("Rithic is da bomb")
 	all_times = sorted(all_times, key=lambda x: x["time"])
 	result=''
 	for i in all_times:
@@ -123,6 +123,7 @@ if __name__ == "__main__":
 	for i in clients:
 		i.send(bytes(result[0:-1],"utf8"))
 	# for i in all_times:
+	print("___________LEADERBOARD___________")
 	print(result)
 	SERVER.close()
 	# broadcast all_times to all clients
