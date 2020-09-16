@@ -57,7 +57,7 @@ def quit_app ():
 	exit(0)
 
 top=tkinter.Tk();
-top.title("Messenger")
+top.title("Multiplayer Quiz")
 
 messages_frame=tkinter.Frame(top)
 scrollbar=tkinter.Scrollbar(messages_frame)
