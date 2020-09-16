@@ -127,7 +127,7 @@ def start_game():
 	# name=input()
 	# client_socket.send(bytes(name,"utf8"))
 	global start_time
-	# msg_list.insert(tkinter.END,"Welcome")
+	## msg_list.insert(tkinter.END,"Welcome")
 	msg_list.insert(tkinter.END,"Please enter your name and press send")
 
 	# x=client_socket.recv(1024).decode("utf8")
