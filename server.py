@@ -11,7 +11,7 @@ HOST =''
 PORT = 33000
 BUFFERSIZE=1024
 CURR_CLIENT_NO = 0
-TOT_CLIENT_NO = 1
+TOT_CLIENT_NO = 5
 ADDR=(HOST,PORT)
 SERVER=socket(AF_INET,SOCK_STREAM)
 SERVER.bind(ADDR)
@@ -56,7 +56,7 @@ def handle_client(client):
 
 def start_game(client,name):
 	
-	# client.send(bytes("dummy","utf8"))
+	client.send(bytes("start","utf8"))
 	time.sleep(.1)
 	q_file = open("question.csv", "r")
 	line = q_file.readline()

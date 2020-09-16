@@ -34,7 +34,7 @@ def timeout():
 	global sent
 	# print("tout cell")
 	while(1):
-		if (timer() - start_time > 10):
+		if (timer() - start_time > 60):
 			client_socket.send(bytes(str("e"),"utf8"))
 			client_socket.send(bytes(str(timer() - start_time),"utf8"))
 			break
@@ -138,7 +138,7 @@ def start_game():
 	x=client_socket.recv(1024).decode("utf8")
 	msg_list.insert(tkinter.END,x)
 	# print(x)
-	# client_socket.recv(6)
+	client_socket.recv(6)
 	button_a.pack()
 	button_b.pack()
 	button_c.pack()
